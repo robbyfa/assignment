@@ -4,6 +4,7 @@ import os
 from sqlalchemy import create_engine, Column, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from flask_cors import CORS 
 
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
@@ -32,6 +33,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():
