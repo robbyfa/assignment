@@ -1,10 +1,16 @@
 runtime: python310
-entrypoint: python api_server.py
+entrypoint: python main.py
 
 instance_class: F1
 automatic_scaling:
   min_instances: 5
   max_instances: 15
+
+env_variables:
+  DB_USER: 'rob'
+  DB_PASSWORD: 'uWzKUp8YtnLuRqJP/dbeZLdV'
+  DB_NAME: 'numbersdb'
+  CLOUD_SQL_CONNECTION_NAME: 'cis3111-2023-class:europe-west1:db-instance'
 
 handlers:
 - url: /.*
