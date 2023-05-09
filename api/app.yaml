@@ -14,7 +14,7 @@ env_variables:
   CLOUD_SQL_CONNECTION_NAME: 'cis3111-2023-class:europe-west1:db-instance'
 
 handlers:
-  url: /.*
+- url: /.*
   script: auto
   http_headers:
     Access-Control-Allow-Origin: "*"
