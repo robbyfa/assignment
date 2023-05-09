@@ -10,7 +10,7 @@
 for (i = 0; i < 10000; i++) {
 async function doRequest() {
         let url = 'https://api-dot-cis3111-2023-class.ew.r.appspot.com/genNum';
-        let res = await fetch(url);
+        let res = await fetch(url, { credentials: "include" });
 
         if (res.ok) {
 

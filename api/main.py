@@ -33,7 +33,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route("/")
 def home():
