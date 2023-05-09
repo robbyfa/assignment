@@ -1,0 +1,5 @@
+Flask
+pymysql
+cloud-sql-python-connector
+Flask-CORS
+SQLAlchemy

@@ -1,0 +1,11 @@
+runtime: python310
+entrypoint: python api_server.py
+
+instance_class: F1
+automatic_scaling:
+  min_instances: 5
+  max_instances: 15
+
+handlers:
+- url: /.*
+  script: auto

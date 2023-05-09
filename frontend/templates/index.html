@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+
+<body>
+<script>
+for (i = 0; i < 10000; i++) {
+async function doRequest() {
+        let url = '/genNum';
+        let res = await fetch(url);
+
+        if (res.ok) {
+
+            let text = await res.text();
+
+            return text;
+        }
+    }
+
+    doRequest().then(data => {
+        console.log(data);
+    });
+}
+
+</script>
+<h1> Google Cloud Assignment</h1>
+<p id='embed'>{{home}}</p>
+
+<a href="./db">View Databse Details</a>
+</body>
+
+</html>
