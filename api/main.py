@@ -1,8 +1,9 @@
 from flask import Flask, render_template, jsonify, request
 import random
 import os
-from sqlalchemy import create_engine, text
-
+from sqlalchemy import create_engine, Column, Integer, String, func
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
@@ -14,9 +15,21 @@ cloud_sql_instance_name = "cis3111-2023-class:europe-west1:db-instance"
 db_url = f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}?unix_socket={db_socket_dir}"
 engine = create_engine(db_url)
 
-# Creating the table
-with engine.connect() as conn:
-    conn.execute(text("CREATE TABLE IF NOT EXISTS random_number_table (InstanceName VARCHAR(50), randomNumber int UNSIGNED)"))
+# Define your database model
+Base = declarative_base()
+
+class NumberEntry(Base):
+    __tablename__ = "random_number_table"
+
+    id = Column(Integer, primary_key=True)
+    InstanceName = Column(String(255))
+    randomNumber = Column(Integer)
+
+# Create the table if it doesn't exist
+Base.metadata.create_all(engine)
+
+# Create a session factory
+Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 
@@ -30,20 +43,25 @@ def genNumFunc():
     if request.method == 'GET':
         number = random.randint(0, 100000)
         name = os.environ.get('GAE_INSTANCE')
-        ins = text("INSERT INTO random_number_table (InstanceName, randomNumber) VALUES (:name, :number)")
-        values = {'name': name, 'number': number}
-        with engine.connect() as conn:
-            conn.execute(ins, values)
+        entry = NumberEntry(InstanceName=name, randomNumber=number)
+        
+        # Insert the data into the table
+        session = Session()
+        session.add(entry)
+        session.commit()
+        session.close()
+        
         message = {'name': name, 'number': number}
         return jsonify(message)
 
 @app.route('/db')
 def showdb():
-    with engine.connect() as conn:
-        allName = conn.execute(text("SELECT DISTINCT InstanceName FROM random_number_table;")).fetchall()
-        allDetails = conn.execute(text("SELECT * FROM random_number_table")).fetchall()
-        maxNum = conn.execute(text("SELECT * FROM random_number_table WHERE randomNumber = (SELECT MAX(randomNumber) FROM random_number_table);")).fetchall()
-        minNum = conn.execute(text("SELECT * FROM random_number_table WHERE randomNumber = (SELECT MIN(randomNumber) FROM random_number_table);")).fetchall()
+    session = Session()
+    allName = session.query(NumberEntry.InstanceName).distinct().all()
+    allDetails = session.query(NumberEntry).all()
+    maxNum = session.query(NumberEntry).order_by(NumberEntry.randomNumber.desc()).first()
+    minNum = session.query(NumberEntry).order_by(NumberEntry.randomNumber.asc()).first()
+    session.close()
 
     return render_template('dbans.html', InsName=allName, All=allDetails, Max=maxNum, Min=minNum)
 

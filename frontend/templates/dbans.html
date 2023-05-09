@@ -23,15 +23,15 @@
       <tbody>
         {% for detail in All %}
           <tr>
-            <td>{{ detail[0] }}</td>
-            <td>{{ detail[1] }}</td>
+            <td>{{ detail.InstanceName }}</td>
+            <td>{{ detail.randomNumber }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
     <h2>Maximum Number</h2>
-    <p>{{ Max[0][1] }}</p>
+    <p>Instance: {{ Max.InstanceName }} - Number: {{ Max.randomNumber }}</p>
     <h2>Minimum Number</h2>
-    <p>{{ Min[0][1] }}</p>
+    <p>Instance: {{ Min.InstanceName }} - Number: {{ Min.randomNumber }}</p>
   </body>
 </html>
