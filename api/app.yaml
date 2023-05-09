@@ -16,3 +16,7 @@ env_variables:
 handlers:
 - url: /.*
   script: auto
+
+access_settings:
+  cors_settings:
+    allow_http_options: true
