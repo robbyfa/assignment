@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Database Details</title>
+  </head>
+  <body>
+    <h1>Database Details</h1>
+    <h2>Instance Names</h2>
+    <ul>
+      {% for name in InsName %}
+        <li>{{ name[0] }}</li>
+      {% endfor %}
+    </ul>
+    <h2>All Details</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Instance Name</th>
+          <th>Random Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for detail in All %}
+          <tr>
+            <td>{{ detail[0] }}</td>
+            <td>{{ detail[1] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <h2>Maximum Number</h2>
+    <p>{{ Max[0][1] }}</p>
+    <h2>Minimum Number</h2>
+    <p>{{ Min[0][1] }}</p>
+  </body>
+</html>
