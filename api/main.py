@@ -13,7 +13,7 @@ config = {
     
 }
 # #Setting the database we want to work in
-config['database'] = 'randomNum'  # add new database to config dict
+config['database'] = 'numbersdb'  # add new database to config dict
 
 
 # establish  connection
@@ -21,8 +21,6 @@ connection = mysql.connector.connect(**config)
 cursor = connection.cursor()
 
 
-# Creating a database
-cursor.execute('CREATE DATABASE randomNum')
 
 # Creating the table
 query1 = ("CREATE TABLE random_number_table (InstanceName VARCHAR(50) , randomNumber int UNSIGNED) ")
@@ -48,7 +46,7 @@ numList = []
 @app.route('/genNum', methods=['GET', 'POST'])
 def genNumFunc():
     # #Setting the database we want to work in
-    config['database'] = 'randomNum'  # add new database to config dict
+    config['database'] = 'numbersdb'  # add new database to config dict
     # establish  connection
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
@@ -68,7 +66,7 @@ def genNumFunc():
 @app.route('/db')
 def showdb():
     # #Setting the database we want to work in
-    config['database'] = 'randomNum'  # add new database to config dict
+    config['database'] = 'numbersdb'  # add new database to config dict
     # establish  connection
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
