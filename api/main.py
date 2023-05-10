@@ -36,7 +36,8 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, resources={r"*": {"origins": ["https://cis3111-2023-class.ew.r.appspot.com"]}},supports_credentials=True)
+CORS(app, )
 
 @app.route("/")
 def home():
