@@ -8,23 +8,17 @@
 <body>
 <script>
 for (i = 0; i < 10000; i++) {
-  async function doRequest() {
-  let url = 'https://api-dot-cis3111-2023-class.ew.r.appspot.com/genNum';
-  let res = await fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
+async function doRequest() {
+        let url = '/genNum';
+        let res = await fetch(url);
 
-  if (res.ok) {
-    let text = await res.text();
-    return text;
-  }
-}
+        if (res.ok) {
+
+            let text = await res.text();
+
+            return text;
+        }
+    }
 
     doRequest().then(data => {
         console.log(data);
@@ -35,7 +29,7 @@ for (i = 0; i < 10000; i++) {
 <h1> Google Cloud Assignment</h1>
 <p id='embed'>{{home}}</p>
 
-<a href="https://api-dot-cis3111-2023-class.ew.r.appspot.com/db">View Database Details</a>
+<a href="./db">View Database Details</a>
 </body>
 
 </html>

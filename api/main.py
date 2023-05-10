@@ -1,75 +1,104 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask,render_template,jsonify,request
 import random
 import os
-from sqlalchemy import create_engine, Column, Integer, String, func
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from flask_cors import CORS 
-from google.cloud.sql.connector import Connector
-import pymysql
-import re
+import mysql.connector
+from mysql.connector.constants import ClientFlag
 
-db_user = "rob"
-db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
-db_name = "numbersdb"
-db_socket_dir = "/cloudsql"
-cloud_sql_instance_name = "cis3111-2023-class:europe-west1:db-instance"
 
-# Create database engine
-db_url = f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}?unix_socket={db_socket_dir}"
-engine = create_engine(db_url)
+config = {
+    'user': 'rob',
+    'password': 'uWzKUp8YtnLuRqJP/dbeZLdV',
+    'host': '34.77.136.123',
+    'cloud_sql_instance_name': 'cis3111-2023-class:europe-west1:db-instance'
+    
+}
+# #Setting the database we want to work in
+config['database'] = 'randomNum'  # add new database to config dict
 
-# Define your database model
-Base = declarative_base()
 
-class NumberEntry(Base):
-    __tablename__ = "random_number_table"
+# establish  connection
+connection = mysql.connector.connect(**config)
+cursor = connection.cursor()
 
-    id = Column(Integer, primary_key=True)
-    InstanceName = Column(String(255))
-    randomNumber = Column(Integer)
 
-# Create the table if it doesn't exist
-Base.metadata.create_all(engine)
+# Creating a database
+cursor.execute('CREATE DATABASE randomNum')
 
-# Create a session factory
-Session = sessionmaker(bind=engine)
+# Creating the table
+query1 = ("CREATE TABLE random_number_table (InstanceName VARCHAR(50) , randomNumber int UNSIGNED) ")
+cursor.execute(query1)
+
+
+# #Delete all rows in table
+delete = "DELETE FROM random_number_table"
+cursor.execute(delete)
+connection.commit()
+
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": ["https://cis3111-2023-class.ew.r.appspot.com"]}},supports_credentials=True)
-CORS(app, )
+
 
 @app.route("/")
 def home():
     home_page = 'Home Page'
     return render_template('index.html', home=home_page)
 
+nameList = []
+numList = []
 @app.route('/genNum', methods=['GET', 'POST'])
 def genNumFunc():
+    # #Setting the database we want to work in
+    config['database'] = 'randomNum'  # add new database to config dict
+    # establish  connection
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
+
+        # GET request
     if request.method == 'GET':
-        number = random.randint(0, 100000)
-        name = os.environ.get('GAE_INSTANCE')
-        entry = NumberEntry(InstanceName=name, randomNumber=number)
-        
-        # Insert the data into the table
-        session = Session()
-        session.add(entry)
-        session.commit()
-        session.close()
-        
-        message = {'name': name, 'number': number}
-        return jsonify(message)
+            number = random.randint(0, 100000)
+            name = os.environ.get('GAE_INSTANCE')
+            ins = "INSERT INTO random_number_table (InstanceName, randomNumber) VALUES (%s, %s)"
+            values = (name, number)
+            cursor.execute(ins, values)
+            connection.commit()
+            message = {'name': name,'number':number,}
+            return jsonify(message)  # serialize and use JSON headers
+
 
 @app.route('/db')
 def showdb():
-    session = Session()
-    allName = session.query(NumberEntry.InstanceName).distinct().all()
-    allDetails = session.query(NumberEntry).all()
-    maxNum = session.query(NumberEntry).order_by(NumberEntry.randomNumber.desc()).first()
-    minNum = session.query(NumberEntry).order_by(NumberEntry.randomNumber.asc()).first()
-    session.close()
+    # #Setting the database we want to work in
+    config['database'] = 'randomNum'  # add new database to config dict
+    # establish  connection
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
 
-    return render_template('dbans.html', InsName=allName, All=allDetails, Max=maxNum, Min=minNum)
+
+    query1 = ("SELECT DISTINCT InstanceName FROM random_number_table;")
+    cursor.execute(query1)
+    allName = cursor.fetchall()
+
+    query2 = ("SELECT * FROM random_number_table")
+    cursor.execute(query2)
+    allDetails = cursor.fetchall()
+
+
+    query3 = ("SELECT * FROM random_number_table WHERE randomNumber = (SELECT MAX(randomNumber) FROM random_number_table);")
+    cursor.execute(query3)
+    maxNum = cursor.fetchall()
+
+
+    query4 = ("SELECT * FROM random_number_table WHERE randomNumber = (SELECT MIN(randomNumber) FROM random_number_table);")
+    cursor.execute(query4)
+    minNum = cursor.fetchall()
+
+
+    return render_template('dbans.html',InsName = allName , All = allDetails, Max = maxNum ,Min = minNum)
+
+
+
+
+connection.close()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=False, threaded=True)
+        app.run(host='0.0.0.0', port=8080, debug=False, threaded=True)
