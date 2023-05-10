@@ -5,6 +5,9 @@ from sqlalchemy import create_engine, Column, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from flask_cors import CORS 
+from google.cloud.sql.connector import Connector
+import pymysql
+import re
 
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
